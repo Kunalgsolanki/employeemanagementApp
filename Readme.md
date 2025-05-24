@@ -10,5 +10,3 @@ A full-stack web application that helps HR or Admin teams manage employees effic
 
 ---
 
-## 📁 Project Structure
-
