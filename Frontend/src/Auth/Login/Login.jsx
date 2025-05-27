@@ -9,7 +9,6 @@ import {
   InputLeftElement,
   chakra,
   Box,
-  Link,
   Avatar,
   FormControl,
   FormHelperText,
@@ -18,7 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { post } from "../../services/ApiEndpoint";
-
+import { Link } from "react-router-dom";
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
@@ -40,15 +39,12 @@ const Login = () => {
       const response = request.data;
       console.log("Login Successful:", response);
 
-      // Example toast on success
       toast({
         title: "Login successful",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-
-      // TODO: handle login (store token, navigate, etc.)
 
     } catch (error) {
       console.error("Login failed:", error);
@@ -79,8 +75,8 @@ const Login = () => {
         alignItems="center"
       >
         <Avatar bg="blue.500" />
-        <Heading color="blue.400">Welcome</Heading>
-        <Box minW={{ base: "90%", md: "468px" }}>
+        <Heading color="blue.400">Welcome to KGS Employee Portal</Heading>
+        <Box minW={{ base: "90%", md: "468px" }} style={{marginTop:"50px"}}>
           <form onSubmit={handleSubmit}>
             <Stack
               spacing={4}
@@ -145,7 +141,7 @@ const Login = () => {
       </Stack>
       <Box>
         New to us?{" "}
-        <Link color="blue.500" href="/Register">
+        <Link color="blue.500" to="/Register">
           Register
         </Link>
       </Box>
