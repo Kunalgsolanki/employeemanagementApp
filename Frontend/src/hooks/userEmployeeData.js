@@ -18,7 +18,7 @@ const useEmployeeData = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [selectedAge, setSelectedAge] = useState('');
   const [selectedSalary, setSelectedSalary] = useState('');
@@ -50,9 +50,12 @@ const useEmployeeData = () => {
 
   const filteredPosts = useMemo(() => {
     let filtered = [...originalPosts];
-    if (searchTerm.trim() !== '') {
-      filtered = filtered.filter(emp =>
-        emp.first_name && emp.first_name.toLowerCase().includes(searchTerm.toLowerCase())
+     console.log(typeof(searchTerm))
+     console.log(searchTerm)
+    if (searchTerm !== "") {
+      console.log(searchTerm, "serachTeam")
+      filtered = filtered?.filter(emp =>
+        emp?.first_name && emp?.first_name?.toLowerCase().includes(searchTerm?.toLowerCase())
       );
     }
     if (selectedSalary.trim() !== '') {
@@ -137,7 +140,6 @@ const useEmployeeData = () => {
     setUpdateIconState,
     departments,
     fetchData,
-    handleSearchElement: setSearchTerm,
     handleSalary: setSelectedSalary,
     handleAge: setSelectedAge,
     filterByDepartments: setSelectedDepartments,

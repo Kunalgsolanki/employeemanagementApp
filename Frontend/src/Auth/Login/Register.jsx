@@ -7,51 +7,87 @@ import {
   InputGroup,
   Stack,
   InputLeftElement,
+  InputRightElement,
   chakra,
   Box,
-  
   Avatar,
   FormControl,
-  InputRightElement,
+  FormErrorMessage,
+  Text,
   useToast,
 } from "@chakra-ui/react";
-import { FaLock, FaUserAlt, FaUserCircle } from "react-icons/fa";
-import { post } from "../../services/ApiEndpoint";
+import { FaUserAlt, FaLock, FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { post } from "../../services/ApiEndpoint";
 
-
+const CFaUserCircle = chakra(FaUserCircle);
+const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 const Register = () => {
   const toast = useToast();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [errors, setErrors] = useState({ name: "", email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { name: "", email: "", password: "" };
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required";
+      isValid = false;
+    } else if (formData.name.length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+      isValid = false;
+    }
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Invalid email format";
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
 
   const handleShowClick = () => setShowPassword(!showPassword);
 
-  const handleChange = (field) => (e) =>
-    setFormData({ ...formData, [field]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const { name, email, password } = formData;
-      const { data } = await post("/api/auth/register", { name, email, password });
+    if (!validateForm()) return;
 
+    setIsLoading(true);
+    try {
+      const { data } = await post("/api/auth/register", formData);
       toast({
         title: "Registration successful",
         status: "success",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
-   navigate("/login")
-    
       setFormData({ name: "", email: "", password: "" });
+      setTimeout(() => navigate("/login"), 1500); 
     } catch (error) {
       toast({
         title: "Registration failed",
@@ -59,86 +95,132 @@ const Register = () => {
         status: "error",
         duration: 4000,
         isClosable: true,
+        position: "top",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Flex
-      direction="column"
-      w="100vw"
-      h="100vh"
-      bg="gray.200"
-      justify="center"
+      minH="100vh"
+      bg="gray.100"
       align="center"
+      justify="center"
+      p={4}
+      flexDir="column"
+      transition="all 0.3s ease"
     >
-      <Stack spacing={4} align="center" mb={6}>
-        <Avatar bg="blue.500" size="xl" />
-        <Heading color="blue.600">Register</Heading>
-      </Stack>
-
-      <Box minW={{ base: "90%", md: "468px" }} bg="whiteAlpha.900" p={6} rounded="md" shadow="md">
-        <form onSubmit={handleSubmit}>
-          <Stack spacing={4}>
-            <FormControl isRequired>
+      <Stack
+        spacing={6}
+        w="full"
+        maxW="md"
+        bg="white"
+        rounded="lg"
+        boxShadow="lg"
+        p={{ base: 6, md: 8 }}
+        align="center"
+      >
+        <Avatar size="lg" bg="blue.500" icon={<FaUserCircle />} />
+        <Heading
+          fontSize={{ base: "2xl", md: "3xl" }}
+          color="blue.600"
+          textAlign="center"
+        >
+          Create Your Account
+        </Heading>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <Stack spacing={5}>
+            <FormControl isRequired isInvalid={!!errors.name}>
               <InputGroup>
-                <InputLeftElement pointerEvents="none" children={<FaUserCircle color="gray.300" />} />
+                <InputLeftElement pointerEvents="none">
+                  <CFaUserCircle color="gray.400" />
+                </InputLeftElement>
                 <Input
                   type="text"
+                  name="name"
                   value={formData.name}
-                  onChange={handleChange("name")}
+                  onChange={handleChange}
                   placeholder="Full Name"
+                  focusBorderColor="blue.500"
+                  _placeholder={{ color: "gray.400" }}
                 />
               </InputGroup>
+              <FormErrorMessage>{errors.name}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={!!errors.email}>
               <InputGroup>
-                <InputLeftElement pointerEvents="none" children={<FaUserAlt color="gray.300" />} />
+                <InputLeftElement pointerEvents="none">
+                  <CFaUserAlt color="gray.400" />
+                </InputLeftElement>
                 <Input
                   type="email"
+                  name="email"
                   value={formData.email}
-                  onChange={handleChange("email")}
+                  onChange={handleChange}
                   placeholder="Email address"
+                  focusBorderColor="blue.500"
+                  _placeholder={{ color: "gray.400" }}
                 />
               </InputGroup>
+              <FormErrorMessage>{errors.email}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isRequired>
+            <FormControl isRequired isInvalid={!!errors.password}>
               <InputGroup>
-                <InputLeftElement pointerEvents="none" children={<FaLock color="gray.300" />} />
+                <InputLeftElement pointerEvents="none">
+                  <CFaLock color="gray.400" />
+                </InputLeftElement>
                 <Input
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   value={formData.password}
-                  onChange={handleChange("password")}
+                  onChange={handleChange}
                   placeholder="Password"
+                  focusBorderColor="blue.500"
+                  _placeholder={{ color: "gray.400" }}
                 />
                 <InputRightElement width="4.5rem">
                   <Button
-                    h="1.75rem"
                     size="sm"
                     onClick={handleShowClick}
+                    variant="ghost"
+                    colorScheme="blue"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? "Hide" : "Show"}
                   </Button>
                 </InputRightElement>
               </InputGroup>
+              <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
 
-            <Button type="submit" colorScheme="blue" width="full" borderRadius="md">
+            <Button
+              type="submit"
+              colorScheme="blue"
+              isLoading={isLoading}
+              loadingText="Registering..."
+              size="lg"
+              rounded="md"
+              _hover={{ bg: "blue.600" }}
+            >
               Register
             </Button>
           </Stack>
         </form>
-      </Box>
-
-      <Box mt={4}>
+      </Stack>
+      <Text mt={4} fontSize="sm" color="gray.600">
         Already have an account?{" "}
-        <Link  to="/Login">
+        <Link
+          to="/login"
+          style={{ color: "blue.500", fontWeight: "semibold" }}
+          _hover={{ textDecoration: "underline" }}
+        >
           Login
         </Link>
-      </Box>
+      </Text>
     </Flex>
   );
 };

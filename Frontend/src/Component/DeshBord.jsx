@@ -28,8 +28,8 @@ import {
   MenuItem,
   Text,
   VStack,
+  Toast,
 } from '@chakra-ui/react';
-import { GrUpdate } from 'react-icons/gr';
 import { CiSearch } from 'react-icons/ci';
 import { MdAutoGraph, MdDelete } from 'react-icons/md';
 import { FaRegEdit } from 'react-icons/fa';
@@ -48,7 +48,6 @@ function Dashboard() {
   const navigate = useNavigate();
   const {
     posts,
-    setPosts,
     loading,
     error,
     searchTerm,
@@ -61,7 +60,6 @@ function Dashboard() {
     setUpdateIconState,
     departments,
     fetchData,
-    handleSearchElement,
     handleSalary,
     handleAge,
     filterByDepartments,
@@ -71,7 +69,9 @@ function Dashboard() {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+    
+   setSearchTerm(e.target.value);
+  
   };
 
   const handleCheckboxChange = (index) => {
@@ -182,12 +182,16 @@ function Dashboard() {
               </InputLeftElement>
               <Input
                 value={searchTerm}
-                onChange={handleSearch}
+                onChange={(e)=>handleSearch(e)}
                 placeholder="Search by ID or Employee Name"
                 fontSize={{ base: 'sm', md: 'md' }}
               />
               <InputRightElement>
-                <Button size={{ base: 'sm', md: 'md' }} onClick={handleSearchElement}>
+                <Button size={{ base: 'sm', md: 'md' }} onClick={()=>{ 
+                  if(searchTerm === ""){
+                    alert('Serach fields is empty')
+                  }
+                }}>
                   <CiSearch />
                 </Button>
               </InputRightElement>
