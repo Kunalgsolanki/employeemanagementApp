@@ -16,8 +16,8 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
-import { post } from "../../services/ApiEndpoint";
-import { Link } from "react-router-dom";
+import { get, post } from "../../services/ApiEndpoint";
+import { Link, useNavigate } from "react-router-dom";
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
@@ -28,9 +28,19 @@ const Login = () => {
     email: "",
     password: ""
   });
-
+ const nevigator = useNavigate()
   const handleShowClick = () => setShowPassword(!showPassword);
 
+  const handleRoute=async()=>{
+    try {
+      const request = await get("/api/admin/getuser");
+      const responce = request.data;
+      console.log(responce)
+      nevigator("/admin");
+    } catch (error) {
+       nevigator("/Employee")
+    }
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -38,14 +48,18 @@ const Login = () => {
       const request = await post('/api/auth/login', { email, password });
       const response = request.data;
       console.log("Login Successful:", response);
-
+    if(request.status === 200){
       toast({
         title: "Login successful",
         status: "success",
         duration: 3000,
         isClosable: true,
       });
-
+      setTimeout(()=>{
+      handleRoute()
+      },4000)
+    }
+      
     } catch (error) {
       console.error("Login failed:", error);
 
