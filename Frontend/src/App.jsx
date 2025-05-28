@@ -6,6 +6,7 @@ import Chart2 from './Component/Charts/Chart2';
 import Login from './Auth/Login/Login';
 import Employee from './Auth/Login/Employee';
 import Register from './Auth/Login/Register';
+import NotFound from './404';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path='/Employee' element={<Employee />} />
         <Route path='/Charts1' element={<Chart1 />} />
         <Route path='/Charts2' element={<Chart2 />} />
+        <Route path='/404' element={<NotFound />} />
       </Routes>
     </Router>
   );
