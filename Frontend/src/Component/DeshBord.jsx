@@ -33,7 +33,7 @@ import {
 import { CiSearch } from 'react-icons/ci';
 import { MdAutoGraph, MdDelete } from 'react-icons/md';
 import { FaRegEdit } from 'react-icons/fa';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input } from '@chakra-ui/react';
 import Error from '../Error';
 import exportFromJSON from 'export-from-json';
@@ -43,6 +43,7 @@ import { useNavigate } from 'react-router-dom';
 import EditEmployeeForm from './EditEmployeeForm';
 import useEmployeeData from '../hooks/userEmployeeData';
 import axios from 'axios';
+import { get } from '../services/ApiEndpoint';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function Dashboard() {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-
+  const  router = useNavigate();
   const handleSearch = (e) => {
     
    setSearchTerm(e.target.value);
@@ -170,7 +171,7 @@ function Dashboard() {
   const handleFormSubmit = () => {
     fetchData();
   };
-
+   
   return (
     <>
       <Container maxW="container.xl" mt={{ base: '20px', md: '30px' }} mb={{ base: '20px', md: '30px' }}>
